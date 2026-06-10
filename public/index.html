@@ -376,7 +376,23 @@ async function generate(){
   ra.innerHTML='<div class="loader"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>';
   const prompt=TOOLS[currentTool].prompt(fields);
   try{
-    const res=await fetch('/api/generate',{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'x-api-key': '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',
+        'anthropic-version':'2023-06-01',
+        'anthropic-dangerous-allow-browser':'true'
+      },
+      body:JSON.stringify({
+        model:'claude-haiku-4-5-20251001',
+        max_tokens:1000,
+        messages:[{role:'user',content:prompt}]
+      })
+    });
+    const data=await res.json();
+    const result={result:data.content?data.content.map(i=>i.text||'').join(''):data.error.message};
+    const res2=result;
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({prompt})
